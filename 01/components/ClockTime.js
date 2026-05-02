@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ClockTime = props => {
+function ClockTime(props) {
     function getCorrectFormatNumber(number) {
         return number.toString().padStart(2, '0');
     }
@@ -15,7 +15,7 @@ const ClockTime = props => {
             {hours}:{minutes}:{seconds}
         </section>
     );
-};
+}
 
 ClockTime.propTypes = {
     date: PropTypes.instanceOf(Date).isRequired,
