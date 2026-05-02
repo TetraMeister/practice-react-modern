@@ -1,10 +1,11 @@
-const taskNumber = '02';
+const taskNumber = '05';
 // numer przerabianego zadania
 
 const path = require('path');
 // importuję bibliotękę [path] z [node.js]
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 // importuję odpowiedni plugin
 module.exports = {
     entry: `./${taskNumber}/app.js`,
@@ -39,6 +40,7 @@ module.exports = {
             filename: 'index.html',
             // określa nazwę dla pliku
         }),
+        new Dotenv(),
     ],
 };
 // eksportuję ustawienia dla webpack-a
