@@ -1,30 +1,21 @@
 import React, { useRef, useReducer } from 'react';
 
 function ContactForm() {
-    const initValues = {
-        form_name: '',
-        form_email: '',
-        form_tel: '',
-        form_subject: '',
-        form_message: '',
-    };
+    const fields = ['form_name', 'form_email', 'form_tel', 'form_subject', 'form_message'];
 
-    const initErrors = {
-        form_name: '',
-        form_email: '',
-        form_tel: '',
-        form_subject: '',
-        form_message: '',
-    };
+    const init = fields.reduce((acc, el) => {
+        acc[el] = '';
+        return acc;
+    }, {});
 
     const reducer = (state, action) => {
-        if (action.type === 'RESET') return initValues;
+        if (action.type === 'RESET') return init;
         const newState = { ...state, [action.name]: action.value };
         return newState;
     };
 
-    const [inputValues, dispatchValues] = useReducer(reducer, initValues);
-    const [errors, dispatchErrors] = useReducer(reducer, initErrors);
+    const [inputValues, dispatchValues] = useReducer(reducer, init);
+    const [errors, dispatchErrors] = useReducer(reducer, init);
 
     const formRef = useRef(null);
 
@@ -98,10 +89,10 @@ function ContactForm() {
 
     const generateErrorsElements = () => {
         const errorsListEl = Object.entries(errors).map(([key, value]) => {
+            if (value === '') return null;
             const fieldStripped = key.replace('form_', '');
             const fieldName = fieldStripped[0].toLocaleUpperCase() + fieldStripped.slice(1);
             const message = value.includes('This_field') && value.replace('This_field', fieldName);
-
             return <li key={key}>{message || value}</li>;
         });
         return errorsListEl;
@@ -110,53 +101,38 @@ function ContactForm() {
     return (
         <div>
             <form ref={formRef} onSubmit={handleSubmit}>
-                <label htmlFor="name">Name and Surname</label>
-                <input
-                    id="name"
-                    type="text"
-                    name="form_name"
-                    onChange={(ev) => handleChange(ev)}
-                    value={inputValues.form_name}
-                />
+                {fields.map((f) => {
+                    const titleStripped = f.replace('form_', '');
+                    const title = titleStripped[0].toLocaleUpperCase() + titleStripped.slice(1);
 
-                <label htmlFor="email">Email</label>
-                <input
-                    id="email"
-                    type="email"
-                    name="form_email"
-                    onChange={(ev) => handleChange(ev)}
-                    value={inputValues.form_email}
-                />
-
-                <label htmlFor="phone">Phone</label>
-                <input
-                    id="phone"
-                    type="tel"
-                    name="form_tel"
-                    onChange={(ev) => handleChange(ev)}
-                    value={inputValues.form_tel}
-                />
-
-                <label htmlFor="subject">Subject</label>
-                <input
-                    id="subject"
-                    type="text"
-                    name="form_subject"
-                    onChange={(ev) => handleChange(ev)}
-                    value={inputValues.form_subject}
-                />
-
-                <label htmlFor="message">Message</label>
-                <textarea
-                    id="message"
-                    name="form_message"
-                    onChange={(ev) => handleChange(ev)}
-                    value={inputValues.form_message}
-                />
-
+                    if (f === 'form_message') {
+                        return (
+                            <div key={f}>
+                                <label htmlFor={f}>{title}</label>
+                                <textarea
+                                    id={f}
+                                    name={f}
+                                    onChange={(ev) => handleChange(ev)}
+                                    value={inputValues[f]}
+                                />
+                            </div>
+                        );
+                    }
+                    return (
+                        <div key={f}>
+                            <label htmlFor={f}>{title}</label>
+                            <input
+                                id={f}
+                                name={f}
+                                onChange={(ev) => handleChange(ev)}
+                                value={inputValues[f]}
+                            />
+                        </div>
+                    );
+                })}
                 <input type="submit" value="Send" />
             </form>
-            {errors.length > 0 && <ul>{generateErrorsElements()}</ul>}
+            {JSON.stringify(init) !== JSON.stringify(errors) && <ul>{generateErrorsElements()}</ul>}
         </div>
     );
 }
